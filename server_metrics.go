@@ -1,9 +1,9 @@
 package grpc_prometheus
 
 import (
-	"context"
-
 	prom "github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 )
@@ -27,22 +27,22 @@ type ServerMetrics struct {
 func NewServerMetrics(counterOpts ...CounterOption) *ServerMetrics {
 	opts := counterOptions(counterOpts)
 	return &ServerMetrics{
-		serverStartedCounter: prom.NewCounterVec(
+		serverStartedCounter: promauto.NewCounterVec(
 			opts.apply(prom.CounterOpts{
 				Name: "grpc_server_started_total",
 				Help: "Total number of RPCs started on the server.",
 			}), []string{"grpc_type", "grpc_service", "grpc_method"}),
-		serverHandledCounter: prom.NewCounterVec(
+		serverHandledCounter: promauto.NewCounterVec(
 			opts.apply(prom.CounterOpts{
 				Name: "grpc_server_handled_total",
 				Help: "Total number of RPCs completed on the server, regardless of success or failure.",
 			}), []string{"grpc_type", "grpc_service", "grpc_method", "grpc_code"}),
-		serverStreamMsgReceived: prom.NewCounterVec(
+		serverStreamMsgReceived: promauto.NewCounterVec(
 			opts.apply(prom.CounterOpts{
 				Name: "grpc_server_msg_received_total",
 				Help: "Total number of RPC stream messages received on the server.",
 			}), []string{"grpc_type", "grpc_service", "grpc_method"}),
-		serverStreamMsgSent: prom.NewCounterVec(
+		serverStreamMsgSent: promauto.NewCounterVec(
 			opts.apply(prom.CounterOpts{
 				Name: "grpc_server_msg_sent_total",
 				Help: "Total number of gRPC stream messages sent by the server.",
@@ -66,7 +66,7 @@ func (m *ServerMetrics) EnableHandlingTimeHistogram(opts ...HistogramOption) {
 		o(&m.serverHandledHistogramOpts)
 	}
 	if !m.serverHandledHistogramEnabled {
-		m.serverHandledHistogram = prom.NewHistogramVec(
+		m.serverHandledHistogram = promauto.NewHistogramVec(
 			m.serverHandledHistogramOpts,
 			[]string{"grpc_type", "grpc_service", "grpc_method"},
 		)
