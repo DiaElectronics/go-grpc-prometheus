@@ -23,13 +23,6 @@ var (
 	StreamServerInterceptor = DefaultServerMetrics.StreamServerInterceptor()
 )
 
-func init() {
-	prom.MustRegister(DefaultServerMetrics.serverStartedCounter)
-	prom.MustRegister(DefaultServerMetrics.serverHandledCounter)
-	prom.MustRegister(DefaultServerMetrics.serverStreamMsgReceived)
-	prom.MustRegister(DefaultServerMetrics.serverStreamMsgSent)
-}
-
 // Register takes a gRPC server and pre-initializes all counters to 0. This
 // allows for easier monitoring in Prometheus (no missing metrics), and should
 // be called *after* all services have been registered with the server. This
